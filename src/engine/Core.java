@@ -127,7 +127,7 @@ public final class Core {
 				returnCode = frame.setScreen(currentScreen);
 				LOGGER.info("Closing title screen.");
 				break;
-			case 2:
+			case 5:
 				// Game & score.
 				do {
 					// One extra live every few levels.
