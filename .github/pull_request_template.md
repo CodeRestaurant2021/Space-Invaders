@@ -5,7 +5,7 @@
 - [ ] No compile errors
 - [ ] Double checked the two items above
 
-## #2 Pull request type
+## #2 PR type
 
 Please check the type of change your PR introduces:
 - [ ] Bugfix
