@@ -1,0 +1,26 @@
+name: Compile Test
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-java@v2
+        with:
+          distribution: 'zulu'
+          java-version: '11'
+          java-package: jdk
+          architecture: x64
+
+      - name: Create 'out' directory
+        run: mkdir out
+      
+      - name: Check for compile errors
+        run: javac ./src/engine/*.java ./src/entity/*.java ./src/screen/*.java -d ./out
