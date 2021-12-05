@@ -288,7 +288,7 @@ public class GameScreen extends Screen {
 				for (EnemyShip enemyShip : this.enemyShipFormation)
 					if (!enemyShip.isDestroyed()
 							&& checkCollision(bullet, enemyShip)) {
-						if (enemyShip.hitCnt() < difficulty-1) {
+						if (enemyShip.getHitCnt() < difficulty-1) {
 							enemyShip.hit();
 							this.bulletsHitCnt++;
 						}

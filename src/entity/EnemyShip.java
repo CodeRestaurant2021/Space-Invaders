@@ -164,7 +164,7 @@ public class EnemyShip extends Entity {
 	 *
 	 * @return this.hitcnt
 	 */
-	public final int hitCnt(){
+	public final int getHitCnt(){
 		return this.hitcnt;
 	}
 
