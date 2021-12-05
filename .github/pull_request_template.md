@@ -26,3 +26,13 @@
 ## 4. Other
 
 *Any last words?*
+
+-------------------------------------------------------------------------------
+
+## Review comment
+
+- P1: Must change or modify your code
+- P2: Strongly recommend to change or modify your code
+- P3: Change or modify your code if possible
+- P4: Change or not, your choice
+- P5: Insignificant opinion
