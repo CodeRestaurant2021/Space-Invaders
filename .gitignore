@@ -173,3 +173,4 @@ log*
 *.ttf
 .checkstyle
 lib
+test/
