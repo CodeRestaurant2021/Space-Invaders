@@ -3,7 +3,7 @@
 
 **YOUR PR SHOULD MEET FOLLOWING REQUIREMENTS**
 
-✔ *Uint tests for the changes*
+✔ *Unit tests for the changes*
 
 ✔ *No compile errors*
 
