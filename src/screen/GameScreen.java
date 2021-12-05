@@ -4,10 +4,7 @@ import java.awt.event.KeyEvent;
 import java.util.HashSet;
 import java.util.Set;
 
-import engine.Cooldown;
-import engine.Core;
-import engine.GameSettings;
-import engine.GameState;
+import engine.*;
 import entity.Bullet;
 import entity.BulletPool;
 import entity.EnemyShip;
@@ -62,6 +59,8 @@ public class GameScreen extends Screen {
 	private int lives;
 	/** Total bullets shot by the player. */
 	private int bulletsShot;
+	/** number of bullets hit */
+	private int bulletsHitCnt;
 	/** Total ships destroyed by the player. */
 	private int shipsDestroyed;
 	/** Moment the game starts. */
@@ -70,6 +69,8 @@ public class GameScreen extends Screen {
 	private boolean levelFinished;
 	/** Checks if a bonus life is received. */
 	private boolean bonusLife;
+	/** Status code for select difficulty */
+	private int difficulty;
 
 	/**
 	 * Constructor, establishes the properties of the screen.
@@ -78,7 +79,7 @@ public class GameScreen extends Screen {
 	 *            Current game state.
 	 * @param gameSettings
 	 *            Current game settings.
-	 * @param bonnusLife
+	 * @param bonusLife
 	 *            Checks if a bonus life is awarded this level.
 	 * @param width
 	 *            Screen width.
@@ -92,6 +93,7 @@ public class GameScreen extends Screen {
 			final int width, final int height, final int fps) {
 		super(width, height, fps);
 
+		this.difficulty = gameState.getDiff();
 		this.gameSettings = gameSettings;
 		this.bonusLife = bonusLife;
 		this.level = gameState.getLevel();
@@ -100,6 +102,7 @@ public class GameScreen extends Screen {
 		if (this.bonusLife)
 			this.lives++;
 		this.bulletsShot = gameState.getBulletsShot();
+		this.bulletsHitCnt = gameState.getBulletsHitCnt();
 		this.shipsDestroyed = gameState.getShipsDestroyed();
 	}
 
@@ -146,7 +149,6 @@ public class GameScreen extends Screen {
 	 */
 	protected final void update() {
 		super.update();
-
 		if (this.inputDelay.checkFinished() && !this.levelFinished) {
 
 			if (!this.ship.isDestroyed()) {
@@ -166,9 +168,11 @@ public class GameScreen extends Screen {
 				if (moveLeft && !isLeftBorder) {
 					this.ship.moveLeft();
 				}
-				if (inputManager.isKeyDown(KeyEvent.VK_SPACE))
-					if (this.ship.shoot(this.bullets))
+				if (inputManager.isKeyDown(KeyEvent.VK_SPACE)) {
+					if (this.ship.shoot(this.bullets)) {
 						this.bulletsShot++;
+					}
+				}
 			}
 
 			if (this.enemyShipSpecial != null) {
@@ -176,7 +180,6 @@ public class GameScreen extends Screen {
 					this.enemyShipSpecial.move(2, 0);
 				else if (this.enemyShipSpecialExplosionCooldown.checkFinished())
 					this.enemyShipSpecial = null;
-
 			}
 			if (this.enemyShipSpecial == null
 					&& this.enemyShipSpecialCooldown.checkFinished()) {
@@ -205,9 +208,9 @@ public class GameScreen extends Screen {
 			this.screenFinishedCooldown.reset();
 		}
 
-		if (this.levelFinished && this.screenFinishedCooldown.checkFinished())
+		if (this.levelFinished && this.screenFinishedCooldown.checkFinished()) {
 			this.isRunning = false;
-
+		}
 	}
 
 	/**
@@ -285,15 +288,23 @@ public class GameScreen extends Screen {
 				for (EnemyShip enemyShip : this.enemyShipFormation)
 					if (!enemyShip.isDestroyed()
 							&& checkCollision(bullet, enemyShip)) {
-						this.score += enemyShip.getPointValue();
-						this.shipsDestroyed++;
-						this.enemyShipFormation.destroy(enemyShip);
+						if (enemyShip.hitCnt() < difficulty-1) {
+							enemyShip.hit();
+							this.bulletsHitCnt++;
+						}
+						else{
+							this.score += enemyShip.getPointValue();
+							this.bulletsHitCnt++;
+							this.shipsDestroyed++;
+							this.enemyShipFormation.destroy(enemyShip);
+							}
 						recyclable.add(bullet);
 					}
 				if (this.enemyShipSpecial != null
 						&& !this.enemyShipSpecial.isDestroyed()
 						&& checkCollision(bullet, this.enemyShipSpecial)) {
 					this.score += this.enemyShipSpecial.getPointValue();
+					this.bulletsHitCnt++;
 					this.shipsDestroyed++;
 					this.enemyShipSpecial.destroy();
 					this.enemyShipSpecialExplosionCooldown.reset();
@@ -336,6 +347,6 @@ public class GameScreen extends Screen {
 	 */
 	public final GameState getGameState() {
 		return new GameState(this.level, this.score, this.lives,
-				this.bulletsShot, this.shipsDestroyed);
+				this.bulletsShot, this.shipsDestroyed, this.bulletsHitCnt);
 	}
 }

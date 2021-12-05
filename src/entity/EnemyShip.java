@@ -27,8 +27,11 @@ public class EnemyShip extends Entity {
 	private Cooldown animationCooldown;
 	/** Checks if the ship has been hit by a bullet. */
 	private boolean isDestroyed;
+	/** Checks the number of bullets hit  */
+	private int hitcnt;
 	/** Values of the ship, in points, when destroyed. */
 	private int pointValue;
+
 
 	/**
 	 * Constructor, establishes the ship's properties.
@@ -47,6 +50,7 @@ public class EnemyShip extends Entity {
 		this.spriteType = spriteType;
 		this.animationCooldown = Core.getCooldown(500);
 		this.isDestroyed = false;
+		this.hitcnt = 0;
 
 		switch (this.spriteType) {
 		case EnemyShipA1:
@@ -72,7 +76,7 @@ public class EnemyShip extends Entity {
 	 * known starting properties.
 	 */
 	public EnemyShip() {
-		super(-32, 60, 16 * 2, 7 * 2, Color.RED);
+		super(-32, 60, 16 * 2, 7 * 2, Color.magenta);
 
 		this.spriteType = SpriteType.EnemyShipSpecial;
 		this.isDestroyed = false;
@@ -139,6 +143,29 @@ public class EnemyShip extends Entity {
 	public final void destroy() {
 		this.isDestroyed = true;
 		this.spriteType = SpriteType.Explosion;
+	}
+
+	/**
+	 * Color of enemy ship changes according to the number of hits
+	 */
+	public final void hit(){
+		if(this.hitcnt == 0) {
+			this.color = Color.YELLOW;
+			this.hitcnt += 1;
+		}
+		else if(this.hitcnt == 1) {
+			this.color = Color.RED;
+			this.hitcnt += 1;
+		}
+	}
+
+	/**
+	 * Checks the number of bullets hit.
+	 *
+	 * @return this.hitcnt
+	 */
+	public final int hitCnt(){
+		return this.hitcnt;
 	}
 
 	/**
