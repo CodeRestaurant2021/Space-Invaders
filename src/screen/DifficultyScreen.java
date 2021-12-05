@@ -71,7 +71,7 @@ public class DifficultyScreen extends Screen{
                 nextMenuItem();
                 this.selectionCooldown.reset();
             }
-            if (inputManager.isKeyDown(KeyEvent.VK_ENTER))
+            if (inputManager.isKeyDown(KeyEvent.VK_SPACE))
                 this.isRunning = false;
         }
     }

@@ -21,7 +21,7 @@ public class Entity {
 	/** Height of the entity. */
 	protected int height;
 	/** Color of the entity. */
-	private Color color;
+	protected Color color;
 	/** Sprite type assigned to the entity. */
 	protected SpriteType spriteType;
 
