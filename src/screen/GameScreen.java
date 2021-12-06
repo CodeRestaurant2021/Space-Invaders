@@ -34,7 +34,11 @@ public class GameScreen extends Screen {
 	private static final int SCREEN_CHANGE_INTERVAL = 1500;
 	/** Height of the interface separation line. */
 	private static final int SEPARATION_LINE_HEIGHT = 40;
+	/** Milliseconds between changes in user selection. */
+	private static final int SELECTION_TIME = 200;
 
+	/** Time between changes in user selection. */
+	private Cooldown selectionCooldown;
 	/** Current game difficulty settings. */
 	private GameSettings gameSettings;
 	/** Current difficulty level number. */
@@ -71,6 +75,12 @@ public class GameScreen extends Screen {
 	private boolean bonusLife;
 	/** Status code for select difficulty */
 	private int difficulty;
+	/** Code for Pause screen menu  */
+	private int PauseOption;
+	/** Checks status paused or not */
+	private boolean isPaused;
+	/** Checks select Exit menu when paused */
+	private boolean isExit;
 
 	/**
 	 * Constructor, establishes the properties of the screen.
@@ -93,6 +103,8 @@ public class GameScreen extends Screen {
 			final int width, final int height, final int fps) {
 		super(width, height, fps);
 
+		this.selectionCooldown = Core.getCooldown(SELECTION_TIME);
+		this.selectionCooldown.reset();
 		this.difficulty = gameState.getDiff();
 		this.gameSettings = gameSettings;
 		this.bonusLife = bonusLife;
@@ -104,6 +116,7 @@ public class GameScreen extends Screen {
 		this.bulletsShot = gameState.getBulletsShot();
 		this.bulletsHitCnt = gameState.getBulletsHitCnt();
 		this.shipsDestroyed = gameState.getShipsDestroyed();
+		this.isExit = gameState.getExit();
 	}
 
 	/**
@@ -149,7 +162,18 @@ public class GameScreen extends Screen {
 	 */
 	protected final void update() {
 		super.update();
+
 		if (this.inputDelay.checkFinished() && !this.levelFinished) {
+
+			/* Check whether enter paused key */
+			if (inputManager.isKeyDown(KeyEvent.VK_ESCAPE)){
+				isPaused = true;
+				PauseOption = 1;
+			}
+
+			while (isPaused) {
+				Pause();
+			}
 
 			if (!this.ship.isDestroyed()) {
 				boolean moveRight = inputManager.isKeyDown(KeyEvent.VK_RIGHT)
@@ -211,6 +235,74 @@ public class GameScreen extends Screen {
 		if (this.levelFinished && this.screenFinishedCooldown.checkFinished()) {
 			this.isRunning = false;
 		}
+	}
+
+	/**
+	 * Updates the elements on Pause screen and checks for events.
+	 */
+	private final void Pause(){
+		drawPaused();
+		try {
+			if (this.selectionCooldown.checkFinished()){
+				if (inputManager.isKeyDown(KeyEvent.VK_UP)
+						|| inputManager.isKeyDown(KeyEvent.VK_W)) {
+					PausePreviousMenuItem();
+					this.selectionCooldown.reset();
+				}
+				if (inputManager.isKeyDown(KeyEvent.VK_DOWN)
+						|| inputManager.isKeyDown(KeyEvent.VK_S)) {
+					PauseNextMenuItem();
+					this.selectionCooldown.reset();
+				}
+				if (inputManager.isKeyDown(KeyEvent.VK_ENTER)) {
+					if(this.PauseOption == 1)
+						isPaused = false;
+					else if(this.PauseOption == 2){
+					}
+					else{
+						isPaused = false;
+						isExit = true;
+						this.isRunning = false;
+					}
+
+				}
+
+			}
+			Thread.sleep(100);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+		}
+	}
+
+	/**
+	 * Draws the elements associated with the pause menu.
+	 */
+	private void drawPaused(){
+		drawManager.initDrawing(this);
+		drawManager.drawPausedTitle(this);
+		drawManager.drawPausedMenu(this, PauseOption);
+		drawManager.completeDrawing(this);
+	}
+
+	/**
+	 * Shifts the focus to the next pause menu item.
+	 */
+
+	private void PauseNextMenuItem() {
+		if (this.PauseOption == 3)
+			this.PauseOption = 1;
+		else
+			this.PauseOption++;
+	}
+
+	/**
+	 * Shifts the focus to the previous pause menu item.
+	 */
+	private void PausePreviousMenuItem() {
+		if (this.PauseOption == 1)
+			this.PauseOption = 3;
+		else
+			this.PauseOption--;
 	}
 
 	/**
@@ -347,6 +439,6 @@ public class GameScreen extends Screen {
 	 */
 	public final GameState getGameState() {
 		return new GameState(this.level, this.score, this.lives,
-				this.bulletsShot, this.shipsDestroyed, this.bulletsHitCnt);
+				this.bulletsShot, this.shipsDestroyed, this.bulletsHitCnt, this.isExit);
 	}
 }
