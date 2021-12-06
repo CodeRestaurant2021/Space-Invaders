@@ -18,6 +18,10 @@ public class GameState {
 	private int bulletsShot;
 	/** Ships destroyed until now. */
 	private int shipsDestroyed;
+	/** number of bullets hit */
+	private int bulletsHitCnt;
+	/** Current exit state */
+	private int difficulty;
 
 	/**
 	 * Constructor.
@@ -35,12 +39,27 @@ public class GameState {
 	 */
 	public GameState(final int level, final int score,
 			final int livesRemaining, final int bulletsShot,
-			final int shipsDestroyed) {
+			final int shipsDestroyed, final int bulletsHit) {
 		this.level = level;
 		this.score = score;
 		this.livesRemaining = livesRemaining;
 		this.bulletsShot = bulletsShot;
 		this.shipsDestroyed = shipsDestroyed;
+		this.bulletsHitCnt = bulletsHit;
+	}
+
+	/**
+	 * Set difficulty state
+	 */
+	public final void setDiff(final int difficulty){
+		this.difficulty = difficulty;
+	}
+
+	/**
+	 * @return the difficulty
+	 */
+	public final int getDiff(){
+		return this.difficulty;
 	}
 
 	/**
@@ -78,4 +97,8 @@ public class GameState {
 		return shipsDestroyed;
 	}
 
+	/**
+	 * @return the bulletsHitCnt
+	 */
+	public final int getBulletsHitCnt(){return this.bulletsHitCnt;}
 }
