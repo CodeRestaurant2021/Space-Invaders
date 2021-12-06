@@ -79,6 +79,8 @@ public class GameScreen extends Screen {
 	private int PauseOption;
 	/** Checks status paused or not */
 	private boolean isPaused;
+	/** Checks select Exit menu when paused */
+	private boolean isExit;
 
 	/**
 	 * Constructor, establishes the properties of the screen.
@@ -114,6 +116,7 @@ public class GameScreen extends Screen {
 		this.bulletsShot = gameState.getBulletsShot();
 		this.bulletsHitCnt = gameState.getBulletsHitCnt();
 		this.shipsDestroyed = gameState.getShipsDestroyed();
+		this.isExit = gameState.getExit();
 	}
 
 	/**
@@ -257,6 +260,9 @@ public class GameScreen extends Screen {
 					else if(this.PauseOption == 2){
 					}
 					else{
+						isPaused = false;
+						isExit = true;
+						this.isRunning = false;
 					}
 
 				}
@@ -433,6 +439,6 @@ public class GameScreen extends Screen {
 	 */
 	public final GameState getGameState() {
 		return new GameState(this.level, this.score, this.lives,
-				this.bulletsShot, this.shipsDestroyed, this.bulletsHitCnt);
+				this.bulletsShot, this.shipsDestroyed, this.bulletsHitCnt, this.isExit);
 	}
 }

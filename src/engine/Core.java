@@ -114,7 +114,7 @@ public final class Core {
 
 		int returnCode = 1;
 		do {
-			gameState = new GameState(1, 0, MAX_LIVES, 0, 0, 0);
+			gameState = new GameState(1, 0, MAX_LIVES, 0, 0, 0, false);
 
 			switch (returnCode) {
 			case 1:
@@ -157,20 +157,29 @@ public final class Core {
 							gameState.getLivesRemaining(),
 							gameState.getBulletsShot(),
 							gameState.getShipsDestroyed(),
-							gameState.getBulletsHitCnt());
+							gameState.getBulletsHitCnt(),
+							gameState.getExit());
 
 				} while (gameState.getLivesRemaining() > 0
-						&& gameState.getLevel() <= NUM_LEVELS);
+						&& gameState.getLevel() <= NUM_LEVELS
+						&& !gameState.getExit());
 
-				LOGGER.info("Starting " + WIDTH + "x" + HEIGHT
-						+ " score screen at " + FPS + " fps, with a score of "
-						+ gameState.getScore() + ", "
-						+ gameState.getLivesRemaining() + " lives remaining, "
-						+ gameState.getBulletsShot() + " bullets shot and "
-						+ gameState.getShipsDestroyed() + " ships destroyed.");
-				currentScreen = new ScoreScreen(width, height, FPS, gameState);
-				returnCode = frame.setScreen(currentScreen);
-				LOGGER.info("Closing score screen.");
+				// gameState.isExit = true
+				if (gameState.getExit()) {
+					LOGGER.info("Closing game screen.");
+					returnCode = 1;
+				}
+				else {
+					LOGGER.info("Starting " + WIDTH + "x" + HEIGHT
+							+ " score screen at " + FPS + " fps, with a score of "
+							+ gameState.getScore() + ", "
+							+ gameState.getLivesRemaining() + " lives remaining, "
+							+ gameState.getBulletsShot() + " bullets shot and "
+							+ gameState.getShipsDestroyed() + " ships destroyed.");
+					currentScreen = new ScoreScreen(width, height, FPS, gameState);
+					returnCode = frame.setScreen(currentScreen);
+					LOGGER.info("Closing score screen.");
+				}
 				break;
 			case 3:
 				// High scores.
