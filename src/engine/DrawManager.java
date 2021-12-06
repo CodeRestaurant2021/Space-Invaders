@@ -284,7 +284,7 @@ public final class DrawManager {
 	public void drawTitle(final Screen screen) {
 		String titleString = "Invaders";
 		String instructionsString =
-				"select with w+s / arrows, confirm with space";
+				"select with w+s / confirm with Enter";
 
 		backBufferGraphics.setColor(Color.GRAY);
 		drawCenteredRegularString(screen, instructionsString,
@@ -335,8 +335,12 @@ public final class DrawManager {
 	 */
 	public void drawDifficultyTitle(final Screen screen){
 		String titleString = "Select Difficulty";
+		String instructionsString = "Press Enter to select";
 		backBufferGraphics.setColor(Color.GREEN);
 		drawCenteredBigString(screen, titleString, screen.getHeight() / 3);
+		backBufferGraphics.setColor(Color.GRAY);
+		drawCenteredRegularString(screen, instructionsString, screen.getHeight() / 2);
+
 	}
 
 	/**
@@ -546,7 +550,7 @@ public final class DrawManager {
 	 */
 	public void drawHighScoreMenu(final Screen screen) {
 		String highScoreString = "High Scores";
-		String instructionsString = "Press Space to return";
+		String instructionsString = "Press ESC to return";
 
 		backBufferGraphics.setColor(Color.GREEN);
 		drawCenteredBigString(screen, highScoreString, screen.getHeight() / 8);
