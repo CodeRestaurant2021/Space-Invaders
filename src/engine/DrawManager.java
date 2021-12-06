@@ -422,6 +422,57 @@ public final class DrawManager {
 		drawCenteredRegularString(screen, ExitString, screen.getHeight() / 3 * 2
 				+ fontRegularMetrics.getHeight() * 4);
 	}
+	/**
+	 * Draws HowtoPlay title.
+	 *
+	 * @param screen
+	 *            Screen to draw on.
+	 */
+	public void drawHowToPlayTitle(final Screen screen) {
+		String HowToPlay = "How To Play";
+		String instructionsString = "Press ESC to return";
+
+		backBufferGraphics.setColor(Color.GREEN);
+		drawCenteredBigString(screen, HowToPlay, screen.getHeight() / 7);
+
+		backBufferGraphics.setColor(Color.GRAY);
+		drawCenteredRegularString(screen, instructionsString,
+				screen.getHeight() / 4);
+
+		backBufferGraphics.setColor(Color.GRAY);
+	}
+
+	/**
+	 * Draws HowtoPlay menu.
+	 *
+	 * @param screen
+	 *            Screen to draw on.
+	 */
+	public void drawHowToPlayMenu(final Screen screen) {
+		String Leftkey = "<- / A";
+		String Rightkey = "-> / D";
+		String Shotkey = "Spacebar";
+		String Pausekey = "ESC";
+
+		String moveLeft = "Move Left";
+		String moveRight = "Move Right";
+		String Shot = "Shoot";
+		String Pause = "Pause";
+
+		int space = screen.getHeight()/12;
+
+		backBufferGraphics.setColor(Color.GRAY);
+		drawLeftCenteredRegularString(screen, Leftkey, screen.getHeight()/3+space);
+		drawLeftCenteredRegularString(screen, Rightkey, screen.getHeight()/3+space*2);
+		drawLeftCenteredRegularString(screen, Shotkey, screen.getHeight()/3+space*3);
+		drawLeftCenteredRegularString(screen, Pausekey, screen.getHeight()/3+space*4);
+
+		backBufferGraphics.setColor(Color.WHITE);
+		drawRightCenteredRegularString(screen, moveLeft, screen.getHeight()/3+space);
+		drawRightCenteredRegularString(screen, moveRight, screen.getHeight()/3+space*2);
+		drawRightCenteredRegularString(screen, Shot, screen.getHeight()/3+space*3);
+		drawRightCenteredRegularString(screen, Pause, screen.getHeight()/3+space*4);
+	}
 
 	/**
 	 * Draws game results.
@@ -597,6 +648,40 @@ public final class DrawManager {
 			final String string, final int height) {
 		backBufferGraphics.setFont(fontRegular);
 		backBufferGraphics.drawString(string, screen.getWidth() / 2
+				- fontRegularMetrics.stringWidth(string) / 2, height);
+	}
+
+	/**
+	 * Draws a right centered string on regular font.
+	 *
+	 * @param screen
+	 *            Screen to draw on.
+	 * @param string
+	 *            String to draw.
+	 * @param height
+	 *            Height of the drawing.
+	 */
+	public void drawRightCenteredRegularString(final Screen screen,
+											   final String string, final int height) {
+		backBufferGraphics.setFont(fontRegular);
+		backBufferGraphics.drawString(string, screen.getWidth() / 4 * 3
+				- fontRegularMetrics.stringWidth(string) / 2, height);
+	}
+
+	/**
+	 * Draws a left centered string on regular font.
+	 *
+	 * @param screen
+	 *            Screen to draw on.
+	 * @param string
+	 *            String to draw.
+	 * @param height
+	 *            Height of the drawing.
+	 */
+	public void drawLeftCenteredRegularString(final Screen screen,
+											  final String string, final int height) {
+		backBufferGraphics.setFont(fontRegular);
+		backBufferGraphics.drawString(string, screen.getWidth() / 4
 				- fontRegularMetrics.stringWidth(string) / 2, height);
 	}
 
