@@ -57,6 +57,8 @@ public class GameScreen extends Screen {
 	private Cooldown screenFinishedCooldown;
 	/** Set of all bullets fired by on screen ships. */
 	private Set<Bullet> bullets;
+	/** HowToPlayScreen object for drawing */
+	private TutorialScreen tutorialScreenForDraw;
 	/** Current score. */
 	private int score;
 	/** Player lives left. */
@@ -79,6 +81,8 @@ public class GameScreen extends Screen {
 	private int PauseOption;
 	/** Checks status paused or not */
 	private boolean isPaused;
+	/** Checks select HowToPlay menu when paused */
+	private boolean isPaused_HowToPlay;
 	/** Checks select Exit menu when paused */
 	private boolean isExit;
 
@@ -103,6 +107,7 @@ public class GameScreen extends Screen {
 			final int width, final int height, final int fps) {
 		super(width, height, fps);
 
+		this.tutorialScreenForDraw = new TutorialScreen(width, height, fps);
 		this.selectionCooldown = Core.getCooldown(SELECTION_TIME);
 		this.selectionCooldown.reset();
 		this.difficulty = gameState.getDiff();
@@ -242,6 +247,7 @@ public class GameScreen extends Screen {
 	 */
 	private final void Pause(){
 		drawPaused();
+		isPaused_HowToPlay = false;
 		try {
 			if (this.selectionCooldown.checkFinished()){
 				if (inputManager.isKeyDown(KeyEvent.VK_UP)
@@ -258,6 +264,13 @@ public class GameScreen extends Screen {
 					if(this.PauseOption == 1)
 						isPaused = false;
 					else if(this.PauseOption == 2){
+						isPaused_HowToPlay = true;
+						while(isPaused_HowToPlay) {
+							tutorialScreenForDraw.draw();
+							if(this.inputDelay.checkFinished())
+								if (inputManager.isKeyDown(KeyEvent.VK_ESCAPE))
+									isPaused_HowToPlay = false;
+						}
 					}
 					else{
 						isPaused = false;

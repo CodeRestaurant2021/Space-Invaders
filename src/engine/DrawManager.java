@@ -305,7 +305,7 @@ public final class DrawManager {
 	public void drawMenu(final Screen screen, final int option) {
 		String playString = "Play";
 		String highScoresString = "High scores";
-		String HowToPlayString = "How to Play";
+		String tutorialString = "Tutorial";
 		String exitString = "exit";
 
 		if (option == 2)
@@ -324,7 +324,7 @@ public final class DrawManager {
 			backBufferGraphics.setColor(Color.GREEN);
 		else
 			backBufferGraphics.setColor(Color.WHITE);
-		drawCenteredRegularString(screen, HowToPlayString,
+		drawCenteredRegularString(screen, tutorialString,
 				screen.getHeight() / 3 * 2 + fontRegularMetrics.getHeight() * 2);
 		if (option == 0)
 			backBufferGraphics.setColor(Color.GREEN);
@@ -408,7 +408,7 @@ public final class DrawManager {
 	 */
 	public void drawPausedMenu(final Screen screen, final int option){
 		String ResumeString = "Resume";
-		String HowToPlayString = "How to Play";
+		String tutorialString = "Tutorial";
 		String ExitString = "Exit to Main Menu";
 
 		if (option == 1)
@@ -420,7 +420,7 @@ public final class DrawManager {
 			backBufferGraphics.setColor(Color.GREEN);
 		else
 			backBufferGraphics.setColor(Color.WHITE);
-		drawCenteredRegularString(screen, HowToPlayString, screen.getHeight() / 3 * 2
+		drawCenteredRegularString(screen, tutorialString, screen.getHeight() / 3 * 2
 				+ fontRegularMetrics.getHeight() * 2);
 		if (option == 3)
 			backBufferGraphics.setColor(Color.GREEN);
@@ -435,12 +435,12 @@ public final class DrawManager {
 	 * @param screen
 	 *            Screen to draw on.
 	 */
-	public void drawHowToPlayTitle(final Screen screen) {
-		String HowToPlay = "How To Play";
+	public void drawTutorialTitle(final Screen screen) {
+		String tutorialString = "Tutorial";
 		String instructionsString = "Press ESC to return";
 
 		backBufferGraphics.setColor(Color.GREEN);
-		drawCenteredBigString(screen, HowToPlay, screen.getHeight() / 7);
+		drawCenteredBigString(screen, tutorialString, screen.getHeight() / 7);
 
 		backBufferGraphics.setColor(Color.GRAY);
 		drawCenteredRegularString(screen, instructionsString,
@@ -455,7 +455,7 @@ public final class DrawManager {
 	 * @param screen
 	 *            Screen to draw on.
 	 */
-	public void drawHowToPlayMenu(final Screen screen) {
+	public void drawTutorialMenu(final Screen screen) {
 		String Leftkey = "<- / A";
 		String Rightkey = "-> / D";
 		String Shotkey = "Spacebar";

@@ -191,7 +191,7 @@ public final class Core {
 				break;
 			case 4:
 				// How to play
-				currentScreen = new HowToPlayScreen(width, height, FPS);
+				currentScreen = new TutorialScreen(width, height, FPS);
 				LOGGER.info("Starting " + WIDTH + "x" + HEIGHT
 						+ " How to Play screen at " + FPS + " fps.");
 				returnCode = frame.setScreen(currentScreen);

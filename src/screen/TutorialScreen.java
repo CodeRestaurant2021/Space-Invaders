@@ -11,7 +11,7 @@ import java.awt.event.KeyEvent;
  *
  */
 
-public class HowToPlayScreen extends Screen{
+public class TutorialScreen extends Screen{
 
     /** Milliseconds between changes in user selection. */
     private static final int SELECTION_TIME = 200;
@@ -31,7 +31,7 @@ public class HowToPlayScreen extends Screen{
      * @param fps
      *            Frames per second, frame rate at which the game is run.
      */
-    public HowToPlayScreen(final int width, final int height, final int fps) {
+    public TutorialScreen(final int width, final int height, final int fps) {
         super(width, height, fps);
 
         // Defaults to play.
@@ -74,8 +74,8 @@ public class HowToPlayScreen extends Screen{
     protected void draw() {
         drawManager.initDrawing(this);
 
-        drawManager.drawHowToPlayTitle(this);
-        drawManager.drawHowToPlayMenu(this);
+        drawManager.drawTutorialTitle(this);
+        drawManager.drawTutorialMenu(this);
 
         drawManager.completeDrawing(this);
     }
