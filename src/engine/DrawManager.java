@@ -288,10 +288,10 @@ public final class DrawManager {
 
 		backBufferGraphics.setColor(Color.GRAY);
 		drawCenteredRegularString(screen, instructionsString,
-				screen.getHeight() / 2);
+				screen.getHeight() / 2 - fontRegularMetrics.getHeight());
 
 		backBufferGraphics.setColor(Color.GREEN);
-		drawCenteredBigString(screen, titleString, screen.getHeight() / 3);
+		drawCenteredBigString(screen, titleString, screen.getHeight() / 3 );
 	}
 
 	/**
@@ -305,6 +305,7 @@ public final class DrawManager {
 	public void drawMenu(final Screen screen, final int option) {
 		String playString = "Play";
 		String highScoresString = "High scores";
+		String HowToPlayString = "How to Play";
 		String exitString = "exit";
 
 		if (option == 2)
@@ -312,19 +313,25 @@ public final class DrawManager {
 		else
 			backBufferGraphics.setColor(Color.WHITE);
 		drawCenteredRegularString(screen, playString,
-				screen.getHeight() / 3 * 2);
+				screen.getHeight() / 3 * 2 - fontRegularMetrics.getHeight() * 2);
 		if (option == 3)
 			backBufferGraphics.setColor(Color.GREEN);
 		else
 			backBufferGraphics.setColor(Color.WHITE);
-		drawCenteredRegularString(screen, highScoresString, screen.getHeight()
-				/ 3 * 2 + fontRegularMetrics.getHeight() * 2);
+		drawCenteredRegularString(screen, highScoresString,
+				screen.getHeight() / 3 * 2 );
+		if (option == 4)
+			backBufferGraphics.setColor(Color.GREEN);
+		else
+			backBufferGraphics.setColor(Color.WHITE);
+		drawCenteredRegularString(screen, HowToPlayString,
+				screen.getHeight() / 3 * 2 + fontRegularMetrics.getHeight() * 2);
 		if (option == 0)
 			backBufferGraphics.setColor(Color.GREEN);
 		else
 			backBufferGraphics.setColor(Color.WHITE);
-		drawCenteredRegularString(screen, exitString, screen.getHeight() / 3
-				* 2 + fontRegularMetrics.getHeight() * 4);
+		drawCenteredRegularString(screen, exitString,
+				screen.getHeight() / 3 * 2 + fontRegularMetrics.getHeight() * 4);
 	}
 
 	/**
