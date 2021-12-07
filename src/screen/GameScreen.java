@@ -58,7 +58,7 @@ public class GameScreen extends Screen {
 	/** Set of all bullets fired by on screen ships. */
 	private Set<Bullet> bullets;
 	/** HowToPlayScreen object for drawing */
-	private HowToPlayScreen HowToPlayScreenForDraw;
+	private TutorialScreen tutorialScreenForDraw;
 	/** Current score. */
 	private int score;
 	/** Player lives left. */
@@ -107,7 +107,7 @@ public class GameScreen extends Screen {
 			final int width, final int height, final int fps) {
 		super(width, height, fps);
 
-		this.HowToPlayScreenForDraw = new HowToPlayScreen(width, height, fps);
+		this.tutorialScreenForDraw = new TutorialScreen(width, height, fps);
 		this.selectionCooldown = Core.getCooldown(SELECTION_TIME);
 		this.selectionCooldown.reset();
 		this.difficulty = gameState.getDiff();
@@ -266,7 +266,7 @@ public class GameScreen extends Screen {
 					else if(this.PauseOption == 2){
 						isPaused_HowToPlay = true;
 						while(isPaused_HowToPlay) {
-							HowToPlayScreenForDraw.draw();
+							tutorialScreenForDraw.draw();
 							if(this.inputDelay.checkFinished())
 								if (inputManager.isKeyDown(KeyEvent.VK_ESCAPE))
 									isPaused_HowToPlay = false;
