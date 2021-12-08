@@ -22,6 +22,8 @@ public class EnemyShip extends Entity {
 	private static final int C_TYPE_POINTS = 30;
 	/** Point value of a bonus enemy. */
 	private static final int BONUS_TYPE_POINTS = 100;
+	/** Point value of a boss enemy. */
+	private static final int BOSS_TYPE_POINTS = 1000;
 
 	/** Cooldown between sprite changes. */
 	private Cooldown animationCooldown;
@@ -69,6 +71,19 @@ public class EnemyShip extends Entity {
 			this.pointValue = 0;
 			break;
 		}
+	}
+
+	/**
+	 * Constructor, establishes the ship's properties for a boss ship, with
+	 * known starting properties.
+	 */
+	public EnemyShip(final int positionX, final int positionY) {
+		super(positionX, positionY, 12 * 2, 8 * 2, Color.WHITE);
+		this.spriteType = SpriteType.EnemyShipSpecial;
+		this.animationCooldown = Core.getCooldown(500);
+		this.isDestroyed = false;
+		this.pointValue = BOSS_TYPE_POINTS;
+		this.hitcnt = 0;
 	}
 
 	/**
@@ -157,6 +172,13 @@ public class EnemyShip extends Entity {
 			this.color = Color.RED;
 			this.hitcnt += 1;
 		}
+	}
+
+	/**
+	 * Hit Boss ship
+	 */
+	public final void hitBoss(){
+		this.hitcnt += 1;
 	}
 
 	/**
