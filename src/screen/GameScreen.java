@@ -59,6 +59,8 @@ public class GameScreen extends Screen {
 	private Set<Bullet> bullets;
 	/** HowToPlayScreen object for drawing */
 	private TutorialScreen tutorialScreenForDraw;
+	/** Manage BGM */
+	private Audio BGM;
 	/** Current score. */
 	private int score;
 	/** Player lives left. */
@@ -122,6 +124,27 @@ public class GameScreen extends Screen {
 		this.bulletsHitCnt = gameState.getBulletsHitCnt();
 		this.shipsDestroyed = gameState.getShipsDestroyed();
 		this.isExit = gameState.getExit();
+
+		/* Set BGM by stage level */
+		switch (this.level) {
+			case 1:
+			case 6:
+				this.BGM = new Audio("/sounds/Level1.wav");
+				break;
+			case 2:
+			case 7:
+				this.BGM = new Audio("/sounds/Level2.wav");
+				break;
+			case 3:
+				this.BGM = new Audio("/sounds/Level3.wav");
+				break;
+			case 4:
+				this.BGM = new Audio("/sounds/Level4.wav");
+				break;
+			case 5:
+				this.BGM = new Audio("/sounds/Level5.wav");
+				break;
+		}
 	}
 
 	/**
@@ -167,6 +190,7 @@ public class GameScreen extends Screen {
 	 */
 	protected final void update() {
 		super.update();
+		BGM.play();
 
 		if (this.inputDelay.checkFinished() && !this.levelFinished) {
 
@@ -199,6 +223,7 @@ public class GameScreen extends Screen {
 				}
 				if (inputManager.isKeyDown(KeyEvent.VK_SPACE)) {
 					if (this.ship.shoot(this.bullets)) {
+						Audio.playSound("/sounds/sonTirVaisseau.wav");
 						this.bulletsShot++;
 					}
 				}
@@ -238,6 +263,7 @@ public class GameScreen extends Screen {
 		}
 
 		if (this.levelFinished && this.screenFinishedCooldown.checkFinished()) {
+			BGM.stop();
 			this.isRunning = false;
 		}
 	}
@@ -275,6 +301,7 @@ public class GameScreen extends Screen {
 					else{
 						isPaused = false;
 						isExit = true;
+						BGM.stop();
 						this.isRunning = false;
 					}
 
@@ -383,6 +410,7 @@ public class GameScreen extends Screen {
 				if (checkCollision(bullet, this.ship) && !this.levelFinished) {
 					recyclable.add(bullet);
 					if (!this.ship.isDestroyed()) {
+						Audio.playSound("/sounds/sonAlienMeurt.wav");
 						this.ship.destroy();
 						this.lives--;
 						this.logger.info("Hit on player ship, " + this.lives
@@ -396,8 +424,10 @@ public class GameScreen extends Screen {
 						if (enemyShip.getHitCnt() < difficulty-1) {
 							enemyShip.hit();
 							this.bulletsHitCnt++;
+							Audio.playSound("/sounds/sonAlienMeurt.wav");
 						}
 						else{
+							Audio.playSound("/sounds/sonAlienMeurt.wav");
 							this.score += enemyShip.getPointValue();
 							this.bulletsHitCnt++;
 							this.shipsDestroyed++;
@@ -408,6 +438,7 @@ public class GameScreen extends Screen {
 				if (this.enemyShipSpecial != null
 						&& !this.enemyShipSpecial.isDestroyed()
 						&& checkCollision(bullet, this.enemyShipSpecial)) {
+					Audio.playSound("/sounds/sonDestructionVaisseau.wav");
 					this.score += this.enemyShipSpecial.getPointValue();
 					this.bulletsHitCnt++;
 					this.shipsDestroyed++;
