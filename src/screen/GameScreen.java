@@ -4,10 +4,7 @@ import java.awt.event.KeyEvent;
 import java.util.HashSet;
 import java.util.Set;
 
-import engine.Cooldown;
-import engine.Core;
-import engine.GameSettings;
-import engine.GameState;
+import engine.*;
 import entity.Bullet;
 import entity.BulletPool;
 import entity.EnemyShip;
@@ -37,7 +34,11 @@ public class GameScreen extends Screen {
 	private static final int SCREEN_CHANGE_INTERVAL = 1500;
 	/** Height of the interface separation line. */
 	private static final int SEPARATION_LINE_HEIGHT = 40;
+	/** Milliseconds between changes in user selection. */
+	private static final int SELECTION_TIME = 200;
 
+	/** Time between changes in user selection. */
+	private Cooldown selectionCooldown;
 	/** Current game difficulty settings. */
 	private GameSettings gameSettings;
 	/** Current difficulty level number. */
@@ -56,12 +57,18 @@ public class GameScreen extends Screen {
 	private Cooldown screenFinishedCooldown;
 	/** Set of all bullets fired by on screen ships. */
 	private Set<Bullet> bullets;
+	/** HowToPlayScreen object for drawing */
+	private TutorialScreen tutorialScreenForDraw;
+	/** Manage BGM */
+	private Audio BGM;
 	/** Current score. */
 	private int score;
 	/** Player lives left. */
 	private int lives;
 	/** Total bullets shot by the player. */
 	private int bulletsShot;
+	/** number of bullets hit */
+	private int bulletsHitCnt;
 	/** Total ships destroyed by the player. */
 	private int shipsDestroyed;
 	/** Moment the game starts. */
@@ -70,6 +77,16 @@ public class GameScreen extends Screen {
 	private boolean levelFinished;
 	/** Checks if a bonus life is received. */
 	private boolean bonusLife;
+	/** Status code for select difficulty */
+	private int difficulty;
+	/** Code for Pause screen menu  */
+	private int PauseOption;
+	/** Checks status paused or not */
+	private boolean isPaused;
+	/** Checks select HowToPlay menu when paused */
+	private boolean isPaused_HowToPlay;
+	/** Checks select Exit menu when paused */
+	private boolean isExit;
 
 	/**
 	 * Constructor, establishes the properties of the screen.
@@ -78,7 +95,7 @@ public class GameScreen extends Screen {
 	 *            Current game state.
 	 * @param gameSettings
 	 *            Current game settings.
-	 * @param bonnusLife
+	 * @param bonusLife
 	 *            Checks if a bonus life is awarded this level.
 	 * @param width
 	 *            Screen width.
@@ -92,6 +109,10 @@ public class GameScreen extends Screen {
 			final int width, final int height, final int fps) {
 		super(width, height, fps);
 
+		this.tutorialScreenForDraw = new TutorialScreen(width, height, fps);
+		this.selectionCooldown = Core.getCooldown(SELECTION_TIME);
+		this.selectionCooldown.reset();
+		this.difficulty = gameState.getDiff();
 		this.gameSettings = gameSettings;
 		this.bonusLife = bonusLife;
 		this.level = gameState.getLevel();
@@ -100,7 +121,30 @@ public class GameScreen extends Screen {
 		if (this.bonusLife)
 			this.lives++;
 		this.bulletsShot = gameState.getBulletsShot();
+		this.bulletsHitCnt = gameState.getBulletsHitCnt();
 		this.shipsDestroyed = gameState.getShipsDestroyed();
+		this.isExit = gameState.getExit();
+
+		/* Set BGM by stage level */
+		switch (this.level) {
+			case 1:
+			case 6:
+				this.BGM = new Audio("/sounds/Level1.wav");
+				break;
+			case 2:
+			case 7:
+				this.BGM = new Audio("/sounds/Level2.wav");
+				break;
+			case 3:
+				this.BGM = new Audio("/sounds/Level3.wav");
+				break;
+			case 4:
+				this.BGM = new Audio("/sounds/Level4.wav");
+				break;
+			case 5:
+				this.BGM = new Audio("/sounds/Level5.wav");
+				break;
+		}
 	}
 
 	/**
@@ -146,8 +190,19 @@ public class GameScreen extends Screen {
 	 */
 	protected final void update() {
 		super.update();
+		BGM.play();
 
 		if (this.inputDelay.checkFinished() && !this.levelFinished) {
+
+			/* Check whether enter paused key */
+			if (inputManager.isKeyDown(KeyEvent.VK_ESCAPE)){
+				isPaused = true;
+				PauseOption = 1;
+			}
+
+			while (isPaused) {
+				Pause();
+			}
 
 			if (!this.ship.isDestroyed()) {
 				boolean moveRight = inputManager.isKeyDown(KeyEvent.VK_RIGHT)
@@ -166,9 +221,12 @@ public class GameScreen extends Screen {
 				if (moveLeft && !isLeftBorder) {
 					this.ship.moveLeft();
 				}
-				if (inputManager.isKeyDown(KeyEvent.VK_SPACE))
-					if (this.ship.shoot(this.bullets))
+				if (inputManager.isKeyDown(KeyEvent.VK_SPACE)) {
+					if (this.ship.shoot(this.bullets)) {
+						Audio.playSound("/sounds/sonTirVaisseau.wav");
 						this.bulletsShot++;
+					}
+				}
 			}
 
 			if (this.enemyShipSpecial != null) {
@@ -176,7 +234,6 @@ public class GameScreen extends Screen {
 					this.enemyShipSpecial.move(2, 0);
 				else if (this.enemyShipSpecialExplosionCooldown.checkFinished())
 					this.enemyShipSpecial = null;
-
 			}
 			if (this.enemyShipSpecial == null
 					&& this.enemyShipSpecialCooldown.checkFinished()) {
@@ -205,9 +262,87 @@ public class GameScreen extends Screen {
 			this.screenFinishedCooldown.reset();
 		}
 
-		if (this.levelFinished && this.screenFinishedCooldown.checkFinished())
+		if (this.levelFinished && this.screenFinishedCooldown.checkFinished()) {
+			BGM.stop();
 			this.isRunning = false;
+		}
+	}
 
+	/**
+	 * Updates the elements on Pause screen and checks for events.
+	 */
+	private final void Pause(){
+		drawPaused();
+		isPaused_HowToPlay = false;
+		try {
+			if (this.selectionCooldown.checkFinished()){
+				if (inputManager.isKeyDown(KeyEvent.VK_UP)
+						|| inputManager.isKeyDown(KeyEvent.VK_W)) {
+					PausePreviousMenuItem();
+					this.selectionCooldown.reset();
+				}
+				if (inputManager.isKeyDown(KeyEvent.VK_DOWN)
+						|| inputManager.isKeyDown(KeyEvent.VK_S)) {
+					PauseNextMenuItem();
+					this.selectionCooldown.reset();
+				}
+				if (inputManager.isKeyDown(KeyEvent.VK_ENTER)) {
+					if(this.PauseOption == 1)
+						isPaused = false;
+					else if(this.PauseOption == 2){
+						isPaused_HowToPlay = true;
+						while(isPaused_HowToPlay) {
+							tutorialScreenForDraw.draw();
+							if(this.inputDelay.checkFinished())
+								if (inputManager.isKeyDown(KeyEvent.VK_ESCAPE))
+									isPaused_HowToPlay = false;
+						}
+					}
+					else{
+						isPaused = false;
+						isExit = true;
+						BGM.stop();
+						this.isRunning = false;
+					}
+
+				}
+
+			}
+			Thread.sleep(100);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+		}
+	}
+
+	/**
+	 * Draws the elements associated with the pause menu.
+	 */
+	private void drawPaused(){
+		drawManager.initDrawing(this);
+		drawManager.drawPausedTitle(this);
+		drawManager.drawPausedMenu(this, PauseOption);
+		drawManager.completeDrawing(this);
+	}
+
+	/**
+	 * Shifts the focus to the next pause menu item.
+	 */
+
+	private void PauseNextMenuItem() {
+		if (this.PauseOption == 3)
+			this.PauseOption = 1;
+		else
+			this.PauseOption++;
+	}
+
+	/**
+	 * Shifts the focus to the previous pause menu item.
+	 */
+	private void PausePreviousMenuItem() {
+		if (this.PauseOption == 1)
+			this.PauseOption = 3;
+		else
+			this.PauseOption--;
 	}
 
 	/**
@@ -275,6 +410,7 @@ public class GameScreen extends Screen {
 				if (checkCollision(bullet, this.ship) && !this.levelFinished) {
 					recyclable.add(bullet);
 					if (!this.ship.isDestroyed()) {
+						Audio.playSound("/sounds/sonAlienMeurt.wav");
 						this.ship.destroy();
 						this.lives--;
 						this.logger.info("Hit on player ship, " + this.lives
@@ -285,15 +421,41 @@ public class GameScreen extends Screen {
 				for (EnemyShip enemyShip : this.enemyShipFormation)
 					if (!enemyShip.isDestroyed()
 							&& checkCollision(bullet, enemyShip)) {
-						this.score += enemyShip.getPointValue();
-						this.shipsDestroyed++;
-						this.enemyShipFormation.destroy(enemyShip);
+						/* Manage boss enemy's HP status by difficulty level */
+						if(enemyShip.getSpriteType() == DrawManager.SpriteType.EnemyShipSpecial){
+							if(enemyShip.getHitCnt()<difficulty*2){
+								Audio.playSound("/sounds/sonDestructionVaisseau.wav");
+								enemyShip.hitBoss();
+								this.bulletsHitCnt++;
+							}else{
+								Audio.playSound("/sounds/sonDestructionVaisseau.wav");
+								this.score += enemyShip.getPointValue();
+								this.bulletsHitCnt++;
+								this.shipsDestroyed++;
+								this.enemyShipFormation.destroy(enemyShip);
+							}
+						}
+						/* Manage enemy's HP status by difficulty level */
+						else if (enemyShip.getHitCnt() < difficulty-1) {
+							Audio.playSound("/sounds/sonDestructionVaisseau.wav");
+							enemyShip.hit();
+							this.bulletsHitCnt++;
+						}
+						else{
+							Audio.playSound("/sounds/sonDestructionVaisseau.wav");
+							this.score += enemyShip.getPointValue();
+							this.bulletsHitCnt++;
+							this.shipsDestroyed++;
+							this.enemyShipFormation.destroy(enemyShip);
+							}
 						recyclable.add(bullet);
 					}
 				if (this.enemyShipSpecial != null
 						&& !this.enemyShipSpecial.isDestroyed()
 						&& checkCollision(bullet, this.enemyShipSpecial)) {
+					Audio.playSound("/sounds/sonDestructionVaisseau.wav");
 					this.score += this.enemyShipSpecial.getPointValue();
+					this.bulletsHitCnt++;
 					this.shipsDestroyed++;
 					this.enemyShipSpecial.destroy();
 					this.enemyShipSpecialExplosionCooldown.reset();
@@ -336,6 +498,6 @@ public class GameScreen extends Screen {
 	 */
 	public final GameState getGameState() {
 		return new GameState(this.level, this.score, this.lives,
-				this.bulletsShot, this.shipsDestroyed);
+				this.bulletsShot, this.shipsDestroyed, this.bulletsHitCnt, this.isExit);
 	}
 }

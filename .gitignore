@@ -173,3 +173,7 @@ log*
 *.ttf
 .checkstyle
 lib
+test/
+COMMIT FORM.md
+.idea/
+out/

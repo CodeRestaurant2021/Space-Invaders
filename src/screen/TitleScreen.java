@@ -2,6 +2,7 @@ package screen;
 
 import java.awt.event.KeyEvent;
 
+import engine.Audio;
 import engine.Cooldown;
 import engine.Core;
 
@@ -18,6 +19,8 @@ public class TitleScreen extends Screen {
 	
 	/** Time between changes in user selection. */
 	private Cooldown selectionCooldown;
+	/** Manage BGM */
+	private Audio audio;
 
 	/**
 	 * Constructor, establishes the properties of the screen.
@@ -36,6 +39,7 @@ public class TitleScreen extends Screen {
 		this.returnCode = 2;
 		this.selectionCooldown = Core.getCooldown(SELECTION_TIME);
 		this.selectionCooldown.reset();
+		this.audio = new Audio("/sounds/Title.wav");
 	}
 
 	/**
@@ -56,6 +60,7 @@ public class TitleScreen extends Screen {
 		super.update();
 
 		draw();
+		audio.play();
 		if (this.selectionCooldown.checkFinished()
 				&& this.inputDelay.checkFinished()) {
 			if (inputManager.isKeyDown(KeyEvent.VK_UP)
@@ -68,8 +73,10 @@ public class TitleScreen extends Screen {
 				nextMenuItem();
 				this.selectionCooldown.reset();
 			}
-			if (inputManager.isKeyDown(KeyEvent.VK_SPACE))
+			if (inputManager.isKeyDown(KeyEvent.VK_ENTER)) {
+				audio.stop();
 				this.isRunning = false;
+			}
 		}
 	}
 
@@ -77,7 +84,7 @@ public class TitleScreen extends Screen {
 	 * Shifts the focus to the next menu item.
 	 */
 	private void nextMenuItem() {
-		if (this.returnCode == 3)
+		if (this.returnCode == 4)
 			this.returnCode = 0;
 		else if (this.returnCode == 0)
 			this.returnCode = 2;
@@ -90,7 +97,7 @@ public class TitleScreen extends Screen {
 	 */
 	private void previousMenuItem() {
 		if (this.returnCode == 0)
-			this.returnCode = 3;
+			this.returnCode = 4;
 		else if (this.returnCode == 2)
 			this.returnCode = 0;
 		else
