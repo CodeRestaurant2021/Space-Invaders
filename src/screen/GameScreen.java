@@ -421,13 +421,28 @@ public class GameScreen extends Screen {
 				for (EnemyShip enemyShip : this.enemyShipFormation)
 					if (!enemyShip.isDestroyed()
 							&& checkCollision(bullet, enemyShip)) {
-						if (enemyShip.getHitCnt() < difficulty-1) {
+						/* Manage boss enemy's HP status by difficulty level */
+						if(enemyShip.getSpriteType() == DrawManager.SpriteType.EnemyShipSpecial){
+							if(enemyShip.getHitCnt()<difficulty*2){
+								Audio.playSound("/sounds/sonDestructionVaisseau.wav");
+								enemyShip.hitBoss();
+								this.bulletsHitCnt++;
+							}else{
+								Audio.playSound("/sounds/sonDestructionVaisseau.wav");
+								this.score += enemyShip.getPointValue();
+								this.bulletsHitCnt++;
+								this.shipsDestroyed++;
+								this.enemyShipFormation.destroy(enemyShip);
+							}
+						}
+						/* Manage enemy's HP status by difficulty level */
+						else if (enemyShip.getHitCnt() < difficulty-1) {
+							Audio.playSound("/sounds/sonDestructionVaisseau.wav");
 							enemyShip.hit();
 							this.bulletsHitCnt++;
-							Audio.playSound("/sounds/sonAlienMeurt.wav");
 						}
 						else{
-							Audio.playSound("/sounds/sonAlienMeurt.wav");
+							Audio.playSound("/sounds/sonDestructionVaisseau.wav");
 							this.score += enemyShip.getPointValue();
 							this.bulletsHitCnt++;
 							this.shipsDestroyed++;
